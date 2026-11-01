@@ -40,5 +40,7 @@ target_include_directories(
 
 target_link_libraries(
     ${BINARY} PUBLIC
+    freaky-engine-camera
     freaky-engine-ecs
+    freaky-engine-module-display
 )

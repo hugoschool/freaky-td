@@ -15,7 +15,7 @@ endif()
 include(cmake/CPM.cmake)
 
 # Currently pinned to a commit
-set(FENGINE_VERSION 281db85da4d8c00ca5c76f03979c85bd6ade233b)
+set(FENGINE_VERSION 43b02ea228edc411c73cf9b125ac33d715c50407)
 CPMAddPackage(
     NAME freaky-engine
     URL https://github.com/hugoschool/r-type/archive/${FENGINE_VERSION}.tar.gz
@@ -38,4 +38,7 @@ target_include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-target_link_libraries(${BINARY} PUBLIC freaky-engine)
+target_link_libraries(
+    ${BINARY} PUBLIC
+    freaky-engine-ecs
+)

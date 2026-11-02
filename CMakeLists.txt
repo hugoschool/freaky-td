@@ -40,6 +40,7 @@ target_include_directories(
 
 target_link_libraries(
     ${BINARY} PUBLIC
+    Boost::json
     freaky-engine-camera
     freaky-engine-ecs
     freaky-engine-module-display

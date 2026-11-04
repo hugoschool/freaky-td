@@ -7,6 +7,7 @@
         ],
 
         "entities": {
+            "total_amount": 150,
             "spawn_rate": 1,
             "types": [
                 "shooter"

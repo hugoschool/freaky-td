@@ -83,6 +83,7 @@ int main(int argc, char **argv) {
 
     std::cout << level.value().get().getPlayerHP() << std::endl;
 
+    // TODO: to be removed
     exit(0);
 
     try {

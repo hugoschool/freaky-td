@@ -18,6 +18,7 @@ namespace freakytd {
 
             std::vector<Path> &getPaths();
 
+            std::int64_t getEntityTotalAmount() const;
             std::chrono::seconds getEntitySpawnRate() const;
             std::set<std::string> &getEntityTypes();
 
@@ -26,6 +27,7 @@ namespace freakytd {
         private:
             std::vector<Path> _paths;
 
+            std::int64_t _entityTotalAmount;
             std::chrono::seconds _entitySpawnRate;
             // TODO: change to an enum whenever the enum is created
             std::set<std::string> _entityTypes;

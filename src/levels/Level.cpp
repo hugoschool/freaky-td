@@ -51,9 +51,17 @@ void freakytd::Level::parseEntities(const boost::json::object &obj) {
 
     const auto &entity = entityValue.as_object();
 
-    if (!entity.contains("spawn_rate") || !entity.contains("types")) {
+    if (!entity.contains("spawn_rate") || !entity.contains("types") || !entity.contains("total_amount")) {
         throw LevelException("Entity has missing attributes");
     }
+
+    const auto &totalAmount = entity.at("total_amount");
+
+    if (!totalAmount.is_int64()) {
+        throw LevelException("Entity total amount isn't a number");
+    }
+
+    _entityTotalAmount = totalAmount.as_int64();
 
     const auto &spawnRate = entity.at("spawn_rate");
 
@@ -105,6 +113,10 @@ void freakytd::Level::parsePlayer(const boost::json::object &obj) {
 
 std::vector<freakytd::Path> &freakytd::Level::getPaths() {
     return _paths;
+}
+
+std::int64_t freakytd::Level::getEntityTotalAmount() const {
+    return _entityTotalAmount;
 }
 
 std::chrono::seconds freakytd::Level::getEntitySpawnRate() const {

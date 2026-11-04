@@ -42,7 +42,10 @@ target_link_libraries(
     ${BINARY} PUBLIC
     Boost::json
     freaky-engine-asset-manager
+    freaky-engine-world
     freaky-engine-camera
     freaky-engine-ecs
+    freaky-engine-observer
     freaky-engine-module-display
+    freaky-engine-module-sound
 )

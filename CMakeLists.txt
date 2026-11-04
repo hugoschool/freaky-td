@@ -17,7 +17,7 @@ include(cmake/CPM.cmake)
 # Currently pinned to a commit
 set(FENGINE_VERSION 43b02ea228edc411c73cf9b125ac33d715c50407)
 CPMAddPackage(
-    NAME freaky-engine
+    NAME f-engine
     URL https://github.com/hugoschool/r-type/archive/${FENGINE_VERSION}.tar.gz
     OPTIONS "ONLY_BUILD_ENGINE ON"
 )

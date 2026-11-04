@@ -1,3 +1,4 @@
+#include "f-engine/asset_manager/SFMLAssetManager.hpp"
 #include "f-engine/camera/Camera.hpp"
 #include "f-engine/ecs/components/DrawableComponent.hpp"
 #include "f-engine/ecs/components/PositionComponent.hpp"
@@ -94,9 +95,12 @@ int main(int argc, char **argv) {
 
         generateTiles(registry);
 
+        std::shared_ptr<fengine::asset_manager::SFMLAssetManager> _assetManager =
+            std::make_shared<fengine::asset_manager::SFMLAssetManager>();
+
         // TODO: change title of window
         std::shared_ptr<fengine::modules::display::IDisplayModule> _displayModule =
-            std::make_shared<fengine::modules::display::SFMLDisplayModule>();
+            std::make_shared<fengine::modules::display::SFMLDisplayModule>(_assetManager);
 
         fengine::camera::Camera _camera(0.0, 100000);
 

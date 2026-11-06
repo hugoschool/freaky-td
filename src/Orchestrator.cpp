@@ -112,7 +112,7 @@ void freakytd::Orchestrator::handleClickEvent(std::pair<float, float> &clickCoor
         if (type.value().type == TileType::BASIC && inTile) {
             auto e = _world._registry.entityManager.spawnEntity();
             type.value().type = TileType::TOWER;
-            _world._registry.componentManager.addComponent(e, (fengine::ecs::PositionComponent) {pos.value().pos_x, pos.value().pos_y - 10, false});
+            _world._registry.componentManager.addComponent(e, (fengine::ecs::PositionComponent) {pos.value().pos_x, pos.value().pos_y, false});
             _world._registry.componentManager.addComponent(e, (fengine::ecs::DrawableComponent) {"./assets/textures/archer.png", std::make_shared<fengine::modules::display::SFMLRectangle>(50, 50), std::nullopt});
             _world._registry.componentManager.addComponent(e, (TowerComponent) {std::pair(8, 15), 150, DamageType::PHYSICAL, TowerType::ARCHER, 750, std::chrono::steady_clock::now()});
         } else if (type.value().type == TileType::PATH && inTile) {

@@ -1,6 +1,8 @@
 #include "Orchestrator.hpp"
 #include "f-engine/asset_manager/SFMLAssetManager.hpp"
+#include "f-engine/modules/display/events/EventMouseButton.hpp"
 #include "f-engine/modules/display/shapes/SFMLCircle.hpp"
+#include "f-engine/modules/display/shapes/SFMLRectangle.hpp"
 #include "map_builder/SFMLMapBuilder.hpp"
 #include "f-engine/ecs/Registry.hpp"
 #include "f-engine/ecs/components/DrawableComponent.hpp"
@@ -13,6 +15,11 @@
 #include "f-engine/modules/sound/SFMLSoundModule.hpp"
 #include "map_builder/SFMLMapBuilder.hpp"
 #include "../common/components/TileComponent.hpp"
+#include "../common/components/TowerComponent.hpp"
+#include "../common/components/UnitComponent.hpp"
+#include "../common/systems/TowerSystem.hpp"
+#include "../common/systems/KillingSystem.hpp"
+#include <chrono>
 #include <memory>
 
 freakytd::Orchestrator::Orchestrator(std::string filepath): _world(fengine::world::World(0, 10000)), _mapBuilder(std::make_unique<SFMLMapBuilder>(_world._registry)),
@@ -26,9 +33,13 @@ freakytd::Orchestrator::Orchestrator(std::string filepath): _world(fengine::worl
     _world._registry.componentManager.registerComponent<fengine::ecs::BoundaryComponent>();
     _world._registry.componentManager.registerComponent<fengine::ecs::DrawableComponent>();
     _world._registry.componentManager.registerComponent<TileComponent>();
+    _world._registry.componentManager.registerComponent<TowerComponent>();
+    _world._registry.componentManager.registerComponent<UnitComponent>();
 
     _world._registry.systemManager.addSystem<fengine::ecs::MovementSystem>(_world._camera);
     _world._registry.systemManager.addSystem<fengine::ecs::DisplaySystem>(*_displayModule, _world._camera);
+    _world._registry.systemManager.addSystem<freakytd::TowerSystem>();
+    _world._registry.systemManager.addSystem<freakytd::KillingSystem>();
 
     try {
         _levels.parseFile(filepath);
@@ -60,7 +71,7 @@ void freakytd::Orchestrator::loop() {
                     break;
                 }
                 if (event->getType() == fengine::modules::display::EventType::Click) {
-                    handleClickEvent(event->getClickCoordinates());
+                    handleClickEvent(event->getClickCoordinates(), event->getMouseButton());
                 }
             }
             if (exit == true) {
@@ -71,7 +82,7 @@ void freakytd::Orchestrator::loop() {
     }
 }
 
-void freakytd::Orchestrator::handleClickEvent(std::pair<float, float> &clickCoords) {
+void freakytd::Orchestrator::handleClickEvent(std::pair<float, float> &clickCoords, fengine::modules::display::EventMouseButton mouseButton) {
     auto &tileTypes = _world._registry.componentManager.getComponents<TileComponent>();
     auto &positions = _world._registry.componentManager.getComponents<fengine::ecs::PositionComponent>();
 
@@ -83,7 +94,7 @@ void freakytd::Orchestrator::handleClickEvent(std::pair<float, float> &clickCoor
             continue;
         if (!type.has_value())
             break;
-        if (type.value().type == TileType::PATH)
+        if (type.value().type != TileType::BASIC)
             continue;
 
         if ((pos.value().pos_x < clickCoords.first + 5
@@ -91,8 +102,16 @@ void freakytd::Orchestrator::handleClickEvent(std::pair<float, float> &clickCoor
             && pos.value().pos_y< clickCoords.second + 5
             && pos.value().pos_y+ 50 > clickCoords.second)) {
             auto e = _world._registry.entityManager.spawnEntity();
-            _world._registry.componentManager.addComponent(e, (fengine::ecs::PositionComponent) {clickCoords.first, clickCoords.second, false});
-            _world._registry.componentManager.addComponent(e, (fengine::ecs::DrawableComponent) {std::nullopt, std::make_shared<fengine::modules::display::SFMLCircle>(30), std::tuple(0, 0, 255)});
+            if (mouseButton == fengine::modules::display::EventMouseButton::Left) {
+                _world._registry.componentManager.addComponent(e, (fengine::ecs::PositionComponent) {clickCoords.first, clickCoords.second, false});
+                _world._registry.componentManager.addComponent(e, (fengine::ecs::DrawableComponent) {std::nullopt, std::make_shared<fengine::modules::display::SFMLCircle>(30), std::tuple(0, 255, 255)});
+                _world._registry.componentManager.addComponent(e, (UnitComponent) {UnitTeam::ENNEMIES, 100, std::pair(5, 8), std::pair(0, 0), std::chrono::steady_clock::now()});
+            } else if (mouseButton == fengine::modules::display::EventMouseButton::Right) {
+                type.value().type = TileType::TOWER;
+                _world._registry.componentManager.addComponent(e, (fengine::ecs::PositionComponent) {pos.value().pos_x, pos.value().pos_y, false});
+                _world._registry.componentManager.addComponent(e, (fengine::ecs::DrawableComponent) {std::nullopt, std::make_shared<fengine::modules::display::SFMLRectangle>(50, 50), std::tuple(0, 0, 255)});
+                _world._registry.componentManager.addComponent(e, (TowerComponent) {std::pair(8, 15), 150, DamageType::PHYSICAL, TowerType::ARCHER, 750, std::chrono::steady_clock::now()});
+            }
             }
     }
 }

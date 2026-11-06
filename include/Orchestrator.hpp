@@ -26,7 +26,7 @@ namespace freakytd {
             std::unique_ptr<fengine::modules::display::IDisplayModule> _displayModule;
             std::unique_ptr<fengine::modules::sound::ISoundModule> _soundModule;
 
-            void handleClickEvent(std::pair<float, float> &clickEvent);
+            void handleClickEvent(std::pair<float, float> &clickEvent, fengine::modules::display::EventMouseButton mouseButton);
 
             Levels _levels;
     };

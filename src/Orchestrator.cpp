@@ -1,5 +1,7 @@
 #include "Orchestrator.hpp"
 #include "f-engine/asset_manager/SFMLAssetManager.hpp"
+#include "f-engine/ecs/components/AnimationComponent.hpp"
+#include "f-engine/ecs/systems/AnimationSystem.hpp"
 #include "f-engine/modules/display/events/EventMouseButton.hpp"
 #include "f-engine/modules/display/shapes/SFMLCircle.hpp"
 #include "f-engine/modules/display/shapes/SFMLRectangle.hpp"
@@ -21,6 +23,7 @@
 #include "../common/systems/KillingSystem.hpp"
 #include "../common/systems/EnnemyPathfindingSystem.hpp"
 #include <chrono>
+#include <iostream>
 #include <memory>
 
 freakytd::Orchestrator::Orchestrator(std::string filepath): _world(fengine::world::World(0, 10000)), _mapBuilder(std::make_unique<SFMLMapBuilder>(_world._registry)),
@@ -33,12 +36,14 @@ freakytd::Orchestrator::Orchestrator(std::string filepath): _world(fengine::worl
     _world._registry.componentManager.registerComponent<fengine::ecs::VelocityComponent>();
     _world._registry.componentManager.registerComponent<fengine::ecs::BoundaryComponent>();
     _world._registry.componentManager.registerComponent<fengine::ecs::DrawableComponent>();
+    _world._registry.componentManager.registerComponent<fengine::ecs::AnimationComponent>();
     _world._registry.componentManager.registerComponent<TileComponent>();
     _world._registry.componentManager.registerComponent<TowerComponent>();
     _world._registry.componentManager.registerComponent<UnitComponent>();
 
     _world._registry.systemManager.addSystem<fengine::ecs::MovementSystem>(_world._camera);
     _world._registry.systemManager.addSystem<fengine::ecs::DisplaySystem>(*_displayModule, _world._camera);
+    _world._registry.systemManager.addSystem<fengine::ecs::AnimationSystem>(*_displayModule, _world._camera);
     _world._registry.systemManager.addSystem<freakytd::TowerSystem>();
     _world._registry.systemManager.addSystem<freakytd::KillingSystem>();
 
@@ -48,8 +53,10 @@ freakytd::Orchestrator::Orchestrator(std::string filepath): _world(fengine::worl
         throw e;
     }
 
-    _mapBuilder->generateTiles(_levels.getCurrentLevel().value().get().getPaths());
-    _world._registry.systemManager.addSystem<freakytd::EnnemyPathfindingSystem>(_levels.getCurrentLevel().value().get().getPaths()[0]);
+    auto &paths = _levels.getCurrentLevel().value().get().getPaths();
+
+    _mapBuilder->generateTiles(paths);
+    _world._registry.systemManager.addSystem<freakytd::EnnemyPathfindingSystem>(paths[0]);
 }
 
 freakytd::Orchestrator::~Orchestrator() {}
@@ -97,21 +104,22 @@ void freakytd::Orchestrator::handleClickEvent(std::pair<float, float> &clickCoor
         if (!type.has_value())
             break;
 
-        bool inTile = (pos.value().pos_x < clickCoords.first + 5
+        bool inTile = (pos.value().pos_x < clickCoords.first
                         && pos.value().pos_x + 50 > clickCoords.first
-                        && pos.value().pos_y< clickCoords.second + 5
+                        && pos.value().pos_y< clickCoords.second
                         && pos.value().pos_y+ 50 > clickCoords.second);
 
         if (type.value().type == TileType::BASIC && inTile) {
             auto e = _world._registry.entityManager.spawnEntity();
             type.value().type = TileType::TOWER;
-            _world._registry.componentManager.addComponent(e, (fengine::ecs::PositionComponent) {pos.value().pos_x, pos.value().pos_y, false});
-            _world._registry.componentManager.addComponent(e, (fengine::ecs::DrawableComponent) {std::nullopt, std::make_shared<fengine::modules::display::SFMLRectangle>(50, 50), std::tuple(0, 0, 255)});
+            _world._registry.componentManager.addComponent(e, (fengine::ecs::PositionComponent) {pos.value().pos_x, pos.value().pos_y - 10, false});
+            _world._registry.componentManager.addComponent(e, (fengine::ecs::DrawableComponent) {"./assets/textures/archer.png", std::make_shared<fengine::modules::display::SFMLRectangle>(50, 50), std::nullopt});
             _world._registry.componentManager.addComponent(e, (TowerComponent) {std::pair(8, 15), 150, DamageType::PHYSICAL, TowerType::ARCHER, 750, std::chrono::steady_clock::now()});
         } else if (type.value().type == TileType::PATH && inTile) {
             auto e = _world._registry.entityManager.spawnEntity();
             _world._registry.componentManager.addComponent(e, (fengine::ecs::PositionComponent) {clickCoords.first, clickCoords.second, false});
-            _world._registry.componentManager.addComponent(e, (fengine::ecs::DrawableComponent) {std::nullopt, std::make_shared<fengine::modules::display::SFMLCircle>(30), std::tuple(0, 255, 255)});
+            _world._registry.componentManager.addComponent(e, (fengine::ecs::DrawableComponent) {"./assets/textures/Snake_walk.png", std::make_shared<fengine::modules::display::SFMLCircle>(ENNEMY_SIZE), std::nullopt});
+            _world._registry.componentManager.addComponent(e, (fengine::ecs::AnimationComponent) {48, 48, 0, 0, 4, 1, false, true, std::chrono::steady_clock::now()});
             _world._registry.componentManager.addComponent(e, (UnitComponent) {UnitTeam::ENNEMIES, 100, std::pair(5, 8), std::pair(0, 0), 3, std::chrono::steady_clock::now()});
             _world._registry.componentManager.addComponent(e, (fengine::ecs::VelocityComponent) {0, 0, false});
         }

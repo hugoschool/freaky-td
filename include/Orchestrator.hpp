@@ -13,6 +13,9 @@
 #include <utility>
 
 namespace freakytd {
+
+    constexpr int ENNEMY_SIZE = 50;
+
     class Orchestrator {
         public:
             Orchestrator(std::string);

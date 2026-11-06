@@ -24,7 +24,7 @@ void freakytd::SFMLMapBuilder::generateTiles(std::vector<Path> &paths) {
         }
     }
 
-    std::tuple<int, int, int> color = std::tuple(0, 255, 0);
+    std::string texturePath = "./assets/textures/grass.png";
 
     for (int y = 0; y < WINDOW_Y; y += width) {
         for (int x = 0; x < WINDOW_X; x += width) {
@@ -32,17 +32,17 @@ void freakytd::SFMLMapBuilder::generateTiles(std::vector<Path> &paths) {
 
             if (_pathMap.contains(std::pair(static_cast<float>(x), static_cast<float>(y)))) {
                 _registry.componentManager.addComponent(entity, (TileComponent) {TileType::PATH});
-                color = std::tuple(255, 0, 0);
+                texturePath = "./assets/textures/path.png";
             } else {
                 _registry.componentManager.addComponent(entity, (TileComponent) {TileType::BASIC});
-                color = std::tuple(0, 255, 0);
+                texturePath = "./assets/textures/grass.png";
             }
 
             _registry.componentManager.addComponent(entity,
                 fengine::ecs::DrawableComponent{
-                    .texture_filepath = std::nullopt,
+                    .texture_filepath = texturePath,
                     .shape = std::make_shared<fengine::modules::display::SFMLRectangle>(width, width),
-                    .color = color,
+                    .color = std::nullopt,
                 });
             _registry.componentManager.addComponent(entity,
                 fengine::ecs::PositionComponent{

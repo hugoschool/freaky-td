@@ -1,5 +1,6 @@
 #include "../common/systems/EnnemyPathfindingSystem.hpp"
 #include "../common/components/UnitComponent.hpp"
+#include "Orchestrator.hpp"
 #include "f-engine/ecs/components/PositionComponent.hpp"
 #include "f-engine/ecs/components/VelocityComponent.hpp"
 
@@ -32,9 +33,9 @@ void freakytd::EnnemyPathfindingSystem::update(fengine::ecs::Registry &manager) 
         for (std::size_t j = 0; j < tiles.size(); j++) {
             float tileX = tiles[j].getX() * 50;
             float tileY = tiles[j].getY() * 50;
-            bool inTile = (tileX < pos.value().pos_x + 30
+            bool inTile = (tileX < pos.value().pos_x + ENNEMY_SIZE
                             && tileX + 50 > pos.value().pos_x
-                            && tileY < pos.value().pos_y + 30
+                            && tileY < pos.value().pos_y + ENNEMY_SIZE
                             && tileY + 50 > pos.value().pos_y);
 
             if (!inTile)

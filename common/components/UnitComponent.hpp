@@ -14,6 +14,7 @@ namespace freakytd {
         float health;
         std::pair<float, float> damage;
         std::pair<float, float> armors;
+        float speed;
 
         std::chrono::time_point<std::chrono::steady_clock> timeBeforeAttack;
     };

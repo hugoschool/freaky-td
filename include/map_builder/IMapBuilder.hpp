@@ -8,7 +8,6 @@ namespace freakytd {
         public:
             virtual ~IMapBuilder() = default;
 
-            virtual void generateTiles() = 0;
-            virtual void modifyTilesToPaths(std::vector<Path> &) = 0;
+            virtual void generateTiles(std::vector<Path> &) = 0;
     };
 }

@@ -10,8 +10,7 @@ namespace freakytd {
             SFMLMapBuilder(fengine::ecs::Registry &);
             ~SFMLMapBuilder();
 
-            void generateTiles() override;
-            void modifyTilesToPaths(std::vector<Path> &vec) override;
+            void generateTiles(std::vector<Path> &) override;
         private:
             fengine::ecs::Registry &_registry;
     };

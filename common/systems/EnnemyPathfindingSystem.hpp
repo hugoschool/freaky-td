@@ -7,12 +7,13 @@
 namespace freakytd {
     class EnnemyPathfindingSystem : public fengine::ecs::ASystem {
         public:
-            EnnemyPathfindingSystem(Path &);
+            EnnemyPathfindingSystem(Path &, int &);
             ~EnnemyPathfindingSystem();
 
             void update(fengine::ecs::Registry &manager) override;
 
         private:
             Path &_path;
+            int &_lives;
     };
 }

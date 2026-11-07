@@ -1,7 +1,7 @@
 #include "../common/systems/KillingSystem.hpp"
 #include "../common/components/UnitComponent.hpp"
 
-freakytd::KillingSystem::KillingSystem() {}
+freakytd::KillingSystem::KillingSystem(int &money): _money(money) {}
 
 freakytd::KillingSystem::~KillingSystem() {}
 
@@ -18,6 +18,9 @@ void freakytd::KillingSystem::update(fengine::ecs::Registry &manager) {
             continue;
 
         if (unit.value().health <= 0) {
+            if (unit.value().team == UnitTeam::ENNEMIES) {
+                _money += unit.value().value;
+            }
             manager.entityManager.killEntity(manager.entityManager.entityFromIndex(i).value());
         }
     }

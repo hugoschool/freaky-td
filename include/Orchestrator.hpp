@@ -29,10 +29,13 @@ namespace freakytd {
             std::unique_ptr<fengine::modules::display::IDisplayModule> _displayModule;
             std::unique_ptr<fengine::modules::sound::ISoundModule> _soundModule;
 
-            void handleClickEvent(std::pair<float, float> &clickEvent);
+            void handleClickEvent(std::pair<float, float> &clickEvent, fengine::modules::display::EventMouseButton);
             void handleEnnemySpawn(void);
 
             Levels _levels;
             std::chrono::time_point<std::chrono::steady_clock> _ennemySpawnClock; // make a vector for this in case there are multiple ennmy type to make things a little more funky
+
+            int _lives;
+            int _money;
     };
 }

@@ -4,7 +4,7 @@
 #include "f-engine/ecs/components/PositionComponent.hpp"
 #include "f-engine/ecs/components/VelocityComponent.hpp"
 
-freakytd::EnnemyPathfindingSystem::EnnemyPathfindingSystem(Path &path): _path(path) {}
+freakytd::EnnemyPathfindingSystem::EnnemyPathfindingSystem(Path &path, int &lives): _path(path), _lives(lives) {}
 
 freakytd::EnnemyPathfindingSystem::~EnnemyPathfindingSystem() {}
 
@@ -42,6 +42,7 @@ void freakytd::EnnemyPathfindingSystem::update(fengine::ecs::Registry &manager) 
                 continue;
 
             if (j == tiles.size() - 1) {
+                _lives -= 1;
                 unit.value().health = 0;
                 break;
             }

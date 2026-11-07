@@ -6,9 +6,12 @@
 namespace freakytd {
     class KillingSystem : public fengine::ecs::ASystem {
         public:
-            KillingSystem();
+            KillingSystem(int &);
             ~KillingSystem();
 
             void update(fengine::ecs::Registry &manager) override;
+
+        private:
+            int &_money;
     };
 }

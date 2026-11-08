@@ -58,4 +58,6 @@ std::optional<std::reference_wrapper<freakytd::Level>> freakytd::Levels::getCurr
 void freakytd::Levels::nextLevel() {
     if (_index < _levels.size() - 1)
         _index += 1;
+    else
+        _index = 0;
 }

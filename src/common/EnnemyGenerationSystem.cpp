@@ -14,7 +14,7 @@ freakytd::EnnemyGenerationSystem::~EnnemyGenerationSystem() {}
 
 void freakytd::EnnemyGenerationSystem::update(fengine::ecs::Registry &manager) {
 
-    if (_total > _count)
+    if (_total >= _count)
         return;
 
     std::chrono::duration<double> duration = std::chrono::steady_clock::now() - _clock;

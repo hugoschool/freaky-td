@@ -45,6 +45,7 @@ target_link_libraries(
     freaky-engine-world
     freaky-engine-camera
     freaky-engine-ecs
+    freaky-engine-scene
     freaky-engine-observer
     freaky-engine-module-display
     freaky-engine-module-sound

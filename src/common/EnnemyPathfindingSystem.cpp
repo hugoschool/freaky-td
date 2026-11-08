@@ -1,5 +1,5 @@
-#include "../common/systems/EnnemyPathfindingSystem.hpp"
-#include "../common/components/UnitComponent.hpp"
+#include "systems/EnnemyPathfindingSystem.hpp"
+#include "components/UnitComponent.hpp"
 #include "Orchestrator.hpp"
 #include "f-engine/ecs/components/PositionComponent.hpp"
 #include "f-engine/ecs/components/VelocityComponent.hpp"

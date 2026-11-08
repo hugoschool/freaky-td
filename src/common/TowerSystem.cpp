@@ -1,6 +1,6 @@
-#include "../common/systems/TowerSystem.hpp"
-#include "../common/components/TowerComponent.hpp"
-#include "../common/components/UnitComponent.hpp"
+#include "systems/TowerSystem.hpp"
+#include "components/TowerComponent.hpp"
+#include "components/UnitComponent.hpp"
 #include "f-engine/ecs/components/PositionComponent.hpp"
 #include <iostream>
 #include <random>

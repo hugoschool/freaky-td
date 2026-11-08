@@ -1,5 +1,5 @@
-#include "../common/systems/KillingSystem.hpp"
-#include "../common/components/UnitComponent.hpp"
+#include "systems/KillingSystem.hpp"
+#include "components/UnitComponent.hpp"
 
 freakytd::KillingSystem::KillingSystem(int &money): _money(money) {}
 

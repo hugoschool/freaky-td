@@ -5,7 +5,7 @@
 #include "f-engine/modules/display/window/IWindow.hpp"
 #include <map>
 #include <utility>
-#include "../common/components/TileComponent.hpp"
+#include "components/TileComponent.hpp"
 
 freakytd::SFMLMapBuilder::SFMLMapBuilder(fengine::ecs::Registry &registry): _registry(registry) {
 

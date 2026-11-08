@@ -16,12 +16,13 @@
 #include "f-engine/modules/display/SFMLDisplayModule.hpp"
 #include "f-engine/modules/sound/SFMLSoundModule.hpp"
 #include "map_builder/SFMLMapBuilder.hpp"
-#include "../common/components/TileComponent.hpp"
-#include "../common/components/TowerComponent.hpp"
-#include "../common/components/UnitComponent.hpp"
-#include "../common/systems/TowerSystem.hpp"
-#include "../common/systems/KillingSystem.hpp"
-#include "../common/systems/EnnemyPathfindingSystem.hpp"
+#include "components/TileComponent.hpp"
+#include "components/TowerComponent.hpp"
+#include "components/UnitComponent.hpp"
+#include "systems/TowerSystem.hpp"
+#include "systems/KillingSystem.hpp"
+#include "systems/EnnemyPathfindingSystem.hpp"
+#include "systems/EnnemyGenerationSystem.hpp"
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -30,7 +31,7 @@ freakytd::Orchestrator::Orchestrator(std::string filepath): _world(fengine::worl
     _assetManager(std::make_shared<fengine::asset_manager::SFMLAssetManager>()),
     _displayModule(std::make_unique<fengine::modules::display::SFMLDisplayModule>(std::static_pointer_cast<fengine::asset_manager::SFMLAssetManager>(_assetManager))),
     _soundModule(std::make_unique<fengine::modules::sound::SFMLSoundModule>(std::static_pointer_cast<fengine::asset_manager::SFMLAssetManager>(_assetManager))),
-    _levels(), _ennemySpawnClock(std::chrono::steady_clock::now()), _lives(10), _money(300) {
+    _levels(), _ennemySpawnClock(std::chrono::steady_clock::now()), _lives(0), _money(500), _scene(std::make_shared<GameScene>("NONE", false, _money, _lives)) {
 
     _world._registry.componentManager.registerComponent<fengine::ecs::PositionComponent>();
     _world._registry.componentManager.registerComponent<fengine::ecs::VelocityComponent>();
@@ -53,10 +54,13 @@ freakytd::Orchestrator::Orchestrator(std::string filepath): _world(fengine::worl
         throw e;
     }
 
-    auto &paths = _levels.getCurrentLevel().value().get().getPaths();
+    auto &level = _levels.getCurrentLevel().value().get();
+    auto &paths = level.getPaths();
+    _lives = _levels.getCurrentLevel().value().get().getPlayerHP();
 
     _mapBuilder->generateTiles(paths);
     _world._registry.systemManager.addSystem<freakytd::EnnemyPathfindingSystem>(paths[0], _lives);
+    _world._registry.systemManager.addSystem<freakytd::EnnemyGenerationSystem>(level.getEntityTotalAmount(), level.getEntitySpawnRate(), level.getEntityTypes(), paths[0].getStart());
 }
 
 freakytd::Orchestrator::~Orchestrator() {}
@@ -67,6 +71,8 @@ void freakytd::Orchestrator::loop() {
         _displayModule->clear();
 
         _world._registry.systemManager.update(_world._registry);
+        _scene->update();
+        _displayModule->drawScene(_scene);
 
         // TODO: this can just be a queue, optional makes no sense here
         std::optional<std::queue<std::unique_ptr<fengine::modules::display::IEvent>>> events =

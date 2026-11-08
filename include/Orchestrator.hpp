@@ -2,12 +2,14 @@
 
 #include "f-engine/asset_manager/IAssetManager.hpp"
 #include "f-engine/modules/display/events/EventMouseButton.hpp"
+#include "f-engine/scene/IScene.hpp"
 #include "levels/Levels.hpp"
 #include "map_builder/IMapBuilder.hpp"
 #include "f-engine/modules/display/IDisplayModule.hpp"
 #include "f-engine/modules/sound/ISoundModule.hpp"
 #include "f-engine/world/World.hpp"
 #include "map_builder/IMapBuilder.hpp"
+#include "scenes/GameScene.hpp"
 #include <chrono>
 #include <memory>
 #include <utility>
@@ -37,5 +39,7 @@ namespace freakytd {
 
             int _lives;
             int _money;
+
+            std::shared_ptr<fengine::scene::IScene> _scene;
     };
 }

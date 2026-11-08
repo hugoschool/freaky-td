@@ -7,8 +7,8 @@
 #include "f-engine/ecs/components/VelocityComponent.hpp"
 #include "f-engine/modules/display/shapes/SFMLCircle.hpp"
 
-freakytd::EnnemyGenerationSystem::EnnemyGenerationSystem(std::int64_t count, std::chrono::seconds timer, std::set<std::string> &types, Tile &tile):
-    _count(count), _timer(timer), _types(types), _beginTile(tile), _clock(std::chrono::steady_clock::now()), _total(0) {}
+freakytd::EnnemyGenerationSystem::EnnemyGenerationSystem(std::int64_t count, std::chrono::seconds timer, std::set<std::string> &types, Tile &tile, std::int64_t &total):
+    _count(count), _timer(timer), _types(types), _beginTile(tile), _clock(std::chrono::steady_clock::now()), _total(total) {}
 
 freakytd::EnnemyGenerationSystem::~EnnemyGenerationSystem() {}
 

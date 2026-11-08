@@ -37,9 +37,14 @@ namespace freakytd {
             Levels _levels;
             std::chrono::time_point<std::chrono::steady_clock> _ennemySpawnClock; // make a vector for this in case there are multiple ennmy type to make things a little more funky
 
+            std::int64_t _enemyTotal;
             int _lives;
             int _money;
 
             std::shared_ptr<fengine::scene::IScene> _scene;
+
+            void generateCurrentLevel();
+            void verifyLevel();
+            void refundTowers();
     };
 }

@@ -10,7 +10,7 @@
 namespace freakytd {
     class EnnemyGenerationSystem : public fengine::ecs::ASystem {
         public:
-            EnnemyGenerationSystem(std::int64_t, std::chrono::seconds, std::set<std::string> &, Tile &);
+            EnnemyGenerationSystem(std::int64_t, std::chrono::seconds, std::set<std::string> &, Tile &, std::int64_t &);
             ~EnnemyGenerationSystem();
 
             void update(fengine::ecs::Registry &manager) override;
@@ -22,6 +22,6 @@ namespace freakytd {
             Tile &_beginTile;
 
             std::chrono::time_point<std::chrono::steady_clock> _clock;
-            std::int64_t _total;
+            std::int64_t &_total;
     };
 }

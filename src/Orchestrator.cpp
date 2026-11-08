@@ -31,7 +31,7 @@ freakytd::Orchestrator::Orchestrator(std::string filepath): _world(fengine::worl
     _assetManager(std::make_shared<fengine::asset_manager::SFMLAssetManager>()),
     _displayModule(std::make_unique<fengine::modules::display::SFMLDisplayModule>(std::static_pointer_cast<fengine::asset_manager::SFMLAssetManager>(_assetManager), "Freaky TD")),
     _soundModule(std::make_unique<fengine::modules::sound::SFMLSoundModule>(std::static_pointer_cast<fengine::asset_manager::SFMLAssetManager>(_assetManager))),
-    _levels(), _ennemySpawnClock(std::chrono::steady_clock::now()), _lives(0), _money(500), _scene(std::make_shared<GameScene>("NONE", false, _money, _lives)) {
+    _levels(), _ennemySpawnClock(std::chrono::steady_clock::now()), _enemyTotal(0), _lives(0), _money(500), _scene(std::make_shared<GameScene>("NONE", false, _money, _lives)) {
 
     _world._registry.componentManager.registerComponent<fengine::ecs::PositionComponent>();
     _world._registry.componentManager.registerComponent<fengine::ecs::VelocityComponent>();
@@ -54,16 +54,98 @@ freakytd::Orchestrator::Orchestrator(std::string filepath): _world(fengine::worl
         throw e;
     }
 
+    generateCurrentLevel();
+}
+
+freakytd::Orchestrator::~Orchestrator() {}
+
+void freakytd::Orchestrator::generateCurrentLevel() {
+    _enemyTotal = 0;
+
     auto &level = _levels.getCurrentLevel().value().get();
     auto &paths = level.getPaths();
     _lives = _levels.getCurrentLevel().value().get().getPlayerHP();
 
     _mapBuilder->generateTiles(paths);
     _world._registry.systemManager.addSystem<freakytd::EnnemyPathfindingSystem>(paths[0], _lives);
-    _world._registry.systemManager.addSystem<freakytd::EnnemyGenerationSystem>(level.getEntityTotalAmount(), level.getEntitySpawnRate(), level.getEntityTypes(), paths[0].getStart());
+    _world._registry.systemManager.addSystem<freakytd::EnnemyGenerationSystem>(level.getEntityTotalAmount(), level.getEntitySpawnRate(), level.getEntityTypes(), paths[0].getStart(), _enemyTotal);
 }
 
-freakytd::Orchestrator::~Orchestrator() {}
+void freakytd::Orchestrator::refundTowers() {
+    auto &towers = _world._registry.componentManager.getComponents<TowerComponent>();
+
+    for (std::size_t i = 0; i < _world._registry.entityManager.size(); i++) {
+        auto &entity = _world._registry.entityManager.entityFromIndex(i);
+        if (!entity.has_value())
+            continue;
+
+        auto &tower = towers[i];
+
+        if (!tower.has_value())
+            continue;
+
+        switch (tower->towerType) {
+            case TowerType::ARCHER:
+                _money += 100;
+                break;
+            case TowerType::MAGICIAN:
+                _money += 150;
+                break;
+            default:
+                break;
+        }
+
+        tower = std::nullopt;
+        _world._registry.entityManager.killEntity(entity.value());
+    }
+}
+
+void freakytd::Orchestrator::verifyLevel() {
+    auto &level = _levels.getCurrentLevel().value().get();
+
+    if (_enemyTotal < level.getEntityTotalAmount()) {
+        return;
+    }
+
+    auto &units = _world._registry.componentManager.getComponents<UnitComponent>();
+
+    for (std::size_t i = 0; i < _world._registry.entityManager.size(); i++) {
+        if (!_world._registry.entityManager.entityFromIndex(i).has_value())
+            continue;
+
+        auto &unit = units[i];
+
+        if (!unit.has_value() || unit->team != UnitTeam::ENNEMIES)
+            continue;
+
+        if (unit->health != 0)
+            return;
+    }
+
+    refundTowers();
+
+    auto &tiles = _world._registry.componentManager.getComponents<TileComponent>();
+
+    for (std::size_t i = 0; i < _world._registry.entityManager.size(); i++) {
+        auto &entity = _world._registry.entityManager.entityFromIndex(i);
+        if (!entity.has_value())
+            continue;
+
+        auto &tile = tiles[i];
+
+        if (!tile.has_value())
+            continue;
+
+        tile->type = TileType::BASIC;
+    }
+
+    _world._registry.systemManager.removeSystem<freakytd::EnnemyPathfindingSystem>();
+    _world._registry.systemManager.removeSystem<freakytd::EnnemyGenerationSystem>();
+
+    _levels.nextLevel();
+
+    generateCurrentLevel();
+}
 
 void freakytd::Orchestrator::loop() {
     bool exit = false;
@@ -94,6 +176,7 @@ void freakytd::Orchestrator::loop() {
             std::cout << "No HP left, game lost!" << std::endl;
             exit = true;
         }
+        verifyLevel();
     }
 }
 

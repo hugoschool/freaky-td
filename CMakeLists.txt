@@ -15,7 +15,7 @@ endif()
 include(cmake/CPM.cmake)
 
 # Currently pinned to a commit
-set(FENGINE_VERSION ffc3f40e06490ccc63b2b9fa09bf0fa0b8d87607)
+set(FENGINE_VERSION bce89e1b0e0fecf58dc2a158c4eaa6015f894aa3)
 CPMAddPackage(
     NAME f-engine
     URL https://github.com/hugoschool/r-type/archive/${FENGINE_VERSION}.tar.gz

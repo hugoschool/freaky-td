@@ -29,7 +29,7 @@
 
 freakytd::Orchestrator::Orchestrator(std::string filepath): _world(fengine::world::World(0, 10000)), _mapBuilder(std::make_unique<SFMLMapBuilder>(_world._registry)),
     _assetManager(std::make_shared<fengine::asset_manager::SFMLAssetManager>()),
-    _displayModule(std::make_unique<fengine::modules::display::SFMLDisplayModule>(std::static_pointer_cast<fengine::asset_manager::SFMLAssetManager>(_assetManager))),
+    _displayModule(std::make_unique<fengine::modules::display::SFMLDisplayModule>(std::static_pointer_cast<fengine::asset_manager::SFMLAssetManager>(_assetManager), "Freaky TD")),
     _soundModule(std::make_unique<fengine::modules::sound::SFMLSoundModule>(std::static_pointer_cast<fengine::asset_manager::SFMLAssetManager>(_assetManager))),
     _levels(), _ennemySpawnClock(std::chrono::steady_clock::now()), _lives(0), _money(500), _scene(std::make_shared<GameScene>("NONE", false, _money, _lives)) {
 

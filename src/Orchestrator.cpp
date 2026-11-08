@@ -89,13 +89,11 @@ void freakytd::Orchestrator::loop() {
                     handleClickEvent(event->getClickCoordinates(), event->getMouseButton());
                 }
             }
-            if (_lives <= 0)
-                exit = true;
-            if (exit == true) {
-                break;
-            }
         }
-
+        if (_lives <= 0) {
+            std::cout << "No HP left, game lost!" << std::endl;
+            exit = true;
+        }
     }
 }
 
